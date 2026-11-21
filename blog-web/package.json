@@ -1,0 +1,20 @@
+{
+  "name": "blog-web-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "独立博客前端仓库：读者端 packages/web + 管理端 packages/admin，同域名部署（/ 与 /admin/）",
+  "workspaces": [
+    "packages/web",
+    "packages/admin"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w blog-web",
+    "dev:admin": "npm run dev -w blog-admin",
+    "build:web": "npm run build -w blog-web",
+    "build:admin": "npm run build -w blog-admin",
+    "build": "npm run build:web && npm run build:admin",
+    "typecheck:web": "npm run typecheck -w blog-web",
+    "typecheck:admin": "npm run typecheck -w blog-admin",
+    "typecheck": "npm run typecheck:web && npm run typecheck:admin"
+  }
+}
