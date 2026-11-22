@@ -10,7 +10,7 @@
 | 读者端（前台） | https://blog.laimengchao.site/ |
 | 管理端 | https://blog.laimengchao.site/admin/ |
 
-> 管理端需要账号登录。如需申请体验账号，请发送邮件联系作者：**crom.lai@outlook.com**。
+> 管理端需要账号登录。如需申请体验账号，请发送邮件联系作者：**crom.lai@outlook.com**
 
 ## 功能特性
 
