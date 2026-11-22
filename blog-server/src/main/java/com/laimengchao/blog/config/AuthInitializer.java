@@ -30,7 +30,8 @@ public class AuthInitializer implements ApplicationRunner {
     private final SysRolePermissionMapper rolePermissionMapper;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${blog.admin.default-password:G#191975}")
+    /** 首次播种的 admin 初始密码；无默认值，由 Nacos 或环境变量下发，缺失时直接启动失败。 */
+    @Value("${blog.admin.default-password:}")
     private String defaultPassword;
 
     private static final Map<String, String> NAMES = new LinkedHashMap<>();
@@ -131,6 +132,11 @@ public class AuthInitializer implements ApplicationRunner {
         SysUser admin = userMapper.selectOne(new LambdaQueryWrapper<SysUser>()
                 .eq(SysUser::getUsername, "admin").last("limit 1"));
         if (admin == null) {
+            // 仅首次播种时要求初始密码：配置缺失却静默写入空密码会导致无法登录且难以排查
+            if (defaultPassword == null || defaultPassword.isBlank()) {
+                throw new IllegalStateException(
+                        "首次启动需要配置 blog.admin.default-password（Nacos 或环境变量 BLOG_ADMIN_DEFAULT_PASSWORD）");
+            }
             admin = new SysUser();
             admin.setUsername("admin");
             admin.setNickname("管理员");

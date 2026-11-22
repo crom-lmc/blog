@@ -5,6 +5,22 @@ server:
 spring:
   application:
     name: blog-server
+  # 配置中心：namespace 区分 local/prod；敏感值只存 Nacos，仓库与镜像内均无明文。
+  # optional 保证本地无 Nacos 时仍可用环境变量启动（见 nacos/README.md）。
+  config:
+    import:
+      - "optional:nacos:blog-server.yaml?group=${BLOG_NACOS_GROUP:BLOG}&refreshEnabled=true"
+  cloud:
+    nacos:
+      server-addr: ${BLOG_NACOS_ADDR:${SSO_NACOS_ADDR:127.0.0.1:8848}}
+      username: ${BLOG_NACOS_USER:${SSO_NACOS_USER:nacos}}
+      password: ${BLOG_NACOS_PASSWORD:${SSO_NACOS_PASSWORD:}}
+      config:
+        enabled: ${BLOG_NACOS_ENABLED:false}
+        namespace: ${BLOG_NACOS_NAMESPACE:blog-local}
+        group: ${BLOG_NACOS_GROUP:BLOG}
+        file-extension: yaml
+        refresh-enabled: true
   datasource:
     url: ${BLOG_DB_URL:}
     username: ${BLOG_DB_USER:}
@@ -59,13 +75,14 @@ springdoc:
 
 # 业务配置
 blog:
-  # 自有 JWT：HS256，密钥至少 32 字节，从环境变量下发
+  # 自有 JWT：HS256，密钥至少 32 字节。无默认值——必须由 Nacos 或环境变量下发，
+  # 缺失时 JwtService 启动即失败，杜绝用弱密钥静默启动。
   jwt:
-    secret: ${BLOG_JWT_SECRET:blog-local-dev-secret-change-me-please-32bytes}
+    secret: ${BLOG_JWT_SECRET:}
     expire-seconds: ${BLOG_JWT_EXPIRE_SECONDS:86400}
-  # 首次启动播种的 admin 初始密码；已存在的 admin 不会被覆盖
+  # 首次启动播种的 admin 初始密码；已存在的 admin 不会被覆盖。无默认值，同密钥策略。
   admin:
-    default-password: ${BLOG_ADMIN_DEFAULT_PASSWORD:G#191975}
+    default-password: ${BLOG_ADMIN_DEFAULT_PASSWORD:}
   upload:
     root: ${BLOG_UPLOAD_ROOT:./uploads}
     url-prefix: /uploads

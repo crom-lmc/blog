@@ -1,0 +1,36 @@
+# =============================================================================
+# blog-server 的 Nacos 配置模板（dataId: blog-server.yaml, group: BLOG）
+# -----------------------------------------------------------------------------
+# 本文件只存放【敏感配置】，普通非敏感配置继续用 jar 内 application.yml 的默认值。
+# 这两套环境靠 namespace 隔离，dataId / group 完全一致：
+#   local -> namespace: blog-local
+#   prod  -> namespace: blog-prod
+#
+# 安全约定（重要）：
+#   - key 名沿用 BLOG_* 环境变量风格，jar 内 application.yml 用 ${BLOG_XXX:} 占位符接收，
+#     Nacos 配置作为 PropertySource 进入 Environment 后占位符即可解析到真实值。
+#   - 真实口令只存在于 Nacos 控制台 / 数据库，不进本仓库（本仓库是 public）。
+#   - 本文件是模板，<...> 占位符必须替换后再导入 Nacos，切勿把占位符原样导入。
+#   - 服务连接的 Nacos 地址/账号/密码/命名空间由部署机 .env 提供（鸡生蛋：连 Nacos 的凭据
+#     本身不能放在 Nacos 里），见 nacos/README.md。
+# =============================================================================
+
+# ---- MySQL 数据源（库名/账号/口令按环境替换）----
+BLOG_DB_URL: jdbc:mysql://<DB_HOST>:3306/blob?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+BLOG_DB_USER: <DB_USER>
+BLOG_DB_PASSWORD: <DB_PASSWORD>
+
+# ---- Redis ----
+BLOG_REDIS_HOST: <REDIS_HOST>
+BLOG_REDIS_PORT: 6379
+BLOG_REDIS_PASSWORD: <REDIS_PASSWORD>
+BLOG_REDIS_DB: 7
+
+# ---- 自有 JWT 签名密钥（HS256，Base64 或任意 >=32 字节字符串）----
+BLOG_JWT_SECRET: <JWT_SECRET_AT_LEAST_32_BYTES>
+
+# ---- 首次启动播种的 admin 初始密码（已存在的 admin 不会被覆盖）----
+BLOG_ADMIN_DEFAULT_PASSWORD: <ADMIN_INITIAL_PASSWORD>
+
+# ---- 站点对外地址（sitemap / RSS 用；非敏感但按环境变化）----
+BLOG_SITE_BASE_URL: <SITE_BASE_URL>
